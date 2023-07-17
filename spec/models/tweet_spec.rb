@@ -1,13 +1,32 @@
-class Tweet < ApplicationRecord
-  validates :text, presence: true
-  belongs_to :user
-  has_many :comments
+require 'rails_helper'
 
-  def self.search(search)
-    if search!=""
-      Tweet.where('text LIKE(?)', "%#{search}%")
-    else
-      Tweet.all
+RSpec.describe Tweet, type: :model do
+  before do
+    @tweet = FactoryBot.build(:tweet)
+  end
+
+  describe 'ツイートの保存' do
+    context 'ツイートが投稿できる場合' do
+      it '画像とテキストを投稿できる' do
+        expect(@tweet).to be_valid
+      end
+      it 'テキストのみで投稿できる' do
+        @tweet.image = ''
+        expect(@tweet).to be_valid
+      end
+    end
+    context 'ツイートが投稿できない場合' do
+      it 'テキストが空では投稿できない' do
+        @tweet.text = ''
+        @tweet.valid?
+        expect(@tweet.errors.full_messages).to include("Text can't be blank")
+      end     
+      it 'ユーザーが紐付いていなければ投稿できない' do
+        @tweet.user = nil
+        @tweet.valid?
+        expect(@tweet.errors.full_messages).to include('User must exist')
+      end
     end
   end
 end
+
