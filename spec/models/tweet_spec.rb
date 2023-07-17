@@ -1,5 +1,13 @@
-require 'rails_helper'
+class Tweet < ApplicationRecord
+  validates :text, presence: true
+  belongs_to :user
+  has_many :comments
 
-RSpec.describe Tweet, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  def self.search(search)
+    if search!=""
+      Tweet.where('text LIKE(?)', "%#{search}%")
+    else
+      Tweet.all
+    end
+  end
 end
